@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f4eb">
+  <meta name="description" content="用旋转的圆画出一只奶蛙：可交互的傅里叶动画、同步配乐与捧腹大笑。">
+  <title>奶蛙的圆周派对 · Fourier Playground</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#main" aria-label="奶蛙的圆周派对，跳到主内容">
+      <span class="brand-mark" aria-hidden="true"><i></i><b></b></span>
+      <span>奶蛙的圆周派对<small>FOURIER PLAYGROUND</small></span>
+    </a>
+    <span class="header-note"><i></i> 一只奶蛙，无数个圆。</span>
+  </header>
+
+  <main id="main" class="workspace">
+    <section class="studio" aria-label="互动动画舞台">
+      <div class="studio-topline">
+        <span class="eyebrow">THE LITTLE CIRCLE STUDIO</span>
+        <button id="fullscreen" class="text-button" type="button" title="切换全屏">⛶ <span>放大舞台</span></button>
+      </div>
+      <div class="stage-shell" id="stageShell">
+        <canvas id="stage" width="720" height="1280" tabindex="0" role="button" aria-label="奶蛙动画舞台，点击奶蛙触发大笑；也可以使用右侧的大笑按钮。"></canvas>
+        <div class="stage-label"><span class="live-dot"></span><span id="phaseLabel">01 / 谐波唤醒</span></div>
+        <div class="stage-tip" id="stageTip">一点一点，把快乐画出来。</div>
+        <div class="loading-cover" id="loadingCover" role="status"><span class="loading-orbit"></span><strong>奶蛙正在赶来…</strong><span>准备圆圈、音乐和一点快乐</span></div>
+      </div>
+      <div class="transport">
+        <div class="transport-buttons">
+          <button id="playPause" class="play-button" type="button" disabled><span id="playIcon" aria-hidden="true">▶</span><span id="playText">播放</span></button>
+          <button id="restart" class="icon-button" type="button" title="从头开始" aria-label="从头开始" disabled>↺</button>
+          <button id="sound" class="sound-button" type="button" aria-pressed="false" title="打开声音" disabled><span id="soundIcon" aria-hidden="true">♪</span><span id="soundText">声音关闭</span></button>
+        </div>
+        <span class="time-readout"><span id="currentTime">00.0</span><span class="time-divider">/</span>28.8 s</span>
+      </div>
+      <label class="sr-only" for="timeline">播放进度，单位秒</label>
+      <input id="timeline" class="timeline" type="range" min="0" max="28.8" value="0" step="0.01" disabled>
+      <div class="chapters" aria-label="跳转到动画阶段">
+        <button type="button" data-seek="0" class="chapter active"><i></i><span>01 <b>唤醒</b></span></button>
+        <button type="button" data-seek="6" class="chapter"><i></i><span>02 <b>描绘</b></span></button>
+        <button type="button" data-seek="16.8" class="chapter"><i></i><span>03 <b>显影</b></span></button>
+        <button type="button" data-seek="20.4" class="chapter"><i></i><span>04 <b>大笑</b></span></button>
+      </div>
+    </section>
+
+    <aside class="control-panel" aria-label="动画控制台">
+      <div class="intro">
+        <div class="edition"><span>一个可以玩的数学小实验</span><span>VOL. 01</span></div>
+        <h1>圆在转，<br>快乐在<span class="title-accent">发生。<svg viewBox="0 0 180 15" aria-hidden="true"><path d="M3 9Q80 0 176 7M17 14Q95 5 159 11"/></svg></span></h1>
+        <p>给奶蛙一点时间，让旋转的圆把它画出来。<br>或者，直接戳一下它的笑点。</p>
+      </div>
+
+      <div class="parameter-block">
+        <div class="control-heading"><label for="harmonics">圆圈多一点，细节多一点</label><span class="parameter-value"><output id="harmonicsValue" for="harmonics">750</output><small>项</small></span></div>
+        <input id="harmonics" class="parameter-range" type="range" min="4" max="750" value="750" step="1" aria-describedby="harmonicsHint">
+        <div class="range-labels"><span>抽象一点</span><span>像一点</span></div>
+        <div class="presets" aria-label="傅里叶项数预设">
+          <button type="button" data-harmonics="4">4 <span>极简</span></button>
+          <button type="button" data-harmonics="24">24 <span>初见</span></button>
+          <button type="button" data-harmonics="180">180 <span>清晰</span></button>
+          <button type="button" data-harmonics="750" class="active">750 <span>细腻</span></button>
+        </div>
+        <p id="harmonicsHint" class="control-hint">开场会逐步增加圆圈，直到你设定的上限。</p>
+      </div>
+
+      <div class="parameter-block compact">
+        <div class="control-heading"><span id="speedLabel">快乐的速度</span><output id="speedValue">1×</output></div>
+        <div class="segmented" role="group" aria-labelledby="speedLabel">
+          <button type="button" data-speed="0.5" aria-pressed="false">0.5×</button>
+          <button type="button" data-speed="1" class="active" aria-pressed="true">1×</button>
+          <button type="button" data-speed="1.5" aria-pressed="false">1.5×</button>
+          <button type="button" data-speed="2" aria-pressed="false">2×</button>
+        </div>
+      </div>
+
+      <div class="switch-list">
+        <label class="switch-row"><span>看见旋转的圆<small>让数学过程也成为风景</small></span><input id="showWheels" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+        <label class="switch-row"><span>留下描绘轨迹<small>跟着笔尖，一点点揭晓</small></span><input id="showTrace" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+        <label class="switch-row"><span>镜头跟随笔尖<small>靠近看看那些小细节</small></span><input id="followCamera" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+        <label class="switch-row"><span>快乐循环播放<small>再来一遍，也完全合理</small></span><input id="loop" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+      </div>
+
+      <button id="laugh" class="laugh-button" type="button" disabled><span class="laugh-face" aria-hidden="true">⌣</span><span><strong>戳一下，笑出声</strong><small>跳到奶蛙的快乐时刻</small></span><span class="button-arrow" aria-hidden="true">↗</span></button>
+
+      <div class="studio-note"><span class="note-symbol" aria-hidden="true">✳</span><p>每个圆都只做一件事：旋转。<br>但一起转，就能画出一只奶蛙。</p><code>z(t) = Σ cₖ eⁱ²πᵏᵗ</code></div>
+      <p class="keyboard-hint"><kbd>空格</kbd> 播放 / 暂停 <span>·</span> <kbd>L</kbd> 大笑 <span>·</span> <kbd>M</kbd> 声音</p>
+    </aside>
+  </main>
+
+  <footer class="site-footer"><span>MADE OF CIRCLES & A LITTLE JOY</span><span>一张参考图 · 一段傅里叶旅程 · 28.8 秒快乐</span></footer>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript-message">这个互动动画需要启用 JavaScript。原视频可以通过项目中的 Python 脚本生成。</p></noscript>
+  <audio id="soundtrack" preload="auto" hidden></audio>
+  <script src="assets/scene.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

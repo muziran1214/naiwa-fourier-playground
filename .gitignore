@@ -1,0 +1,25 @@
+# Generated media, intermediate data, diagnostics, logs and caches
+/output/
+*.log
+
+# Python environments and bytecode
+/.venv/
+/venv/
+/node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local credentials and configuration
+.env
+.env.*
+!.env.example
+
+# Editor and operating system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
